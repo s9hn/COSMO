@@ -10,8 +10,8 @@ interface ClaudeApi {
 
     @POST("v1/messages")
     suspend fun postMessage(
-        @Header("x-api-key") header1: String = "",
-        @Header("anthropic-version") header2: String = "2023-06-01",
+        @Header("x-api-key") header1: String,
+        @Header("anthropic-version") header2: String,
         @Body claudeRequestDto: ClaudeRequestDto,
     ): ClaudeResponseDto
 }
