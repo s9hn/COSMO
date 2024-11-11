@@ -11,7 +11,6 @@ interface GptApi {
     @Streaming
     @POST("v1/chat/completions")
     suspend fun postMessage(
-        @Header("Authorization") header1: String,
         @Body gptRequestDto: GptRequestDto,
     ): ResponseBody
 }
