@@ -11,16 +11,14 @@ data class GptResponseDto(
 
     @Serializable
     data class ChoiceResponseDto(
-        @SerialName("message")
+        @SerialName("delta")
         val messageResponseDto: MessageResponseDto,
     ) {
 
         @Serializable
         data class MessageResponseDto(
-            @SerialName("role")
-            val role: String,
             @SerialName("content")
-            val content: String,
+            val content: String? = "",
         )
     }
 }
@@ -28,25 +26,3 @@ data class GptResponseDto(
 // logprobs: 단어별 신뢰도
 // refusal: 윤리 등 GPT 자체적인 응답 거부
 // finish_reason: GPT 통신 이슈
-
-@Serializable
-data class GptResponse(
-    val id: String,
-    val `object`: String,
-    val created: Long,
-    val model: String,
-    @SerialName("system_fingerprint") val systemFingerprint: String,
-    val choices: List<Choice>,
-)
-
-@Serializable
-data class Choice(
-    val index: Int,
-    val delta: Delta,
-    @SerialName("finish_reason") val finishReason: String?,
-)
-
-@Serializable
-data class Delta(
-    val content: String,
-)

@@ -18,7 +18,9 @@ import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.compose.rememberNavController
+import kotlinx.coroutines.launch
 import kw.team.designsystem.component.CosmoAiChatButton
+import kw.team.main.component.MainAiChatBottomSheet
 import kw.team.main.component.MainBottomAppBar
 import kw.team.main.component.MainNavHost
 import kw.team.main.model.MainBottomAppBarTab
@@ -33,11 +35,12 @@ internal fun MainScreen(
     val bottomSheetState = rememberModalBottomSheetState(
         skipPartiallyExpanded = true,
     )
-    val chats = mainViewModel.logs.collectAsStateWithLifecycle()
+    val messages = mainViewModel.chatLog.collectAsStateWithLifecycle()
     val pagerState = rememberPagerState(pageCount = { mainViewModel.aiModels.size })
     var currentBottomSheetTab by remember { mutableStateOf(mainViewModel.aiModels.first()) }
     var isShowBottomSheet by remember { mutableStateOf(false) }
     var currentBottomAppBarTab by remember { mutableStateOf(HOME) }
+    var message by remember { mutableStateOf("") }
 
     Scaffold(
         bottomBar = {
@@ -52,9 +55,9 @@ internal fun MainScreen(
         floatingActionButton = {
             CosmoAiChatButton(
                 onClick = {
-                    mainViewModel.converseWith("안녕")
                     isShowBottomSheet = true
-                })
+                }
+            )
         },
         floatingActionButtonPosition = FabPosition.Center,
         modifier = Modifier.fillMaxSize(),
@@ -66,7 +69,30 @@ internal fun MainScreen(
         ) {
             MainNavHost(navController = rememberNavController())
 
-
+            if (isShowBottomSheet) {
+                MainAiChatBottomSheet(
+                    onDismissRequest = { isShowBottomSheet = false },
+                    onTabClick = { selectedTab ->
+                        scope.launch {
+                            pagerState.animateScrollToPage(selectedTab.ordinal)
+                        }
+                        currentBottomSheetTab = selectedTab
+                    },
+                    onSendMessageClick = {
+                        mainViewModel.converseWith(message = message)
+                        message = ""
+                    },
+                    onTextValueChanged = { text ->
+                        message = text
+                    },
+                    bottomSheetState = bottomSheetState,
+                    pagerState = pagerState,
+                    selectedTab = currentBottomSheetTab,
+                    tabs = mainViewModel.aiModels,
+                    messages = messages.value,
+                    message = message,
+                )
+            }
         }
     }
 }

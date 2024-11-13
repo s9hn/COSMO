@@ -63,7 +63,7 @@ object ApiModule {
 
     @Provides
     @Singleton
-    internal fun provideJson(): Json = Json {
+    fun provideJson(): Json = Json {
         ignoreUnknownKeys = true
         coerceInputValues = true
     }
