@@ -1,7 +1,9 @@
 package kw.team.ai.repository
 
+import kotlinx.coroutines.flow.StateFlow
+
 abstract class AiRepository(
-    private val chatRepository: ChatRepository,
+    val chatRepository: ChatRepository,
     private val generateQuizRepository: GenerateQuizRepository? = null,
 ) {
 
@@ -16,6 +18,8 @@ abstract class AiRepository(
 }
 
 interface ChatRepository {
+    val reply: StateFlow<String>
+
     suspend fun fetchMessage(message: String)
 }
 

@@ -3,7 +3,7 @@ package kw.team.ai.usecase
 import kw.team.ai.repository.AiRepository
 import javax.inject.Inject
 
-class ChatAiUseCase @Inject constructor(
+class SendMessageUseCase @Inject constructor(
     private val aiRepository: AiRepository,
 ) {
 
