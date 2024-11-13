@@ -1,13 +1,12 @@
 package kw.team.main.component
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement.Bottom
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.PagerState
 import androidx.compose.foundation.pager.rememberPagerState
@@ -22,6 +21,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.rememberStandardBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment.Companion.CenterHorizontally
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalDensity
@@ -31,16 +31,21 @@ import kw.team.ai.model.AiModel
 import kw.team.designsystem.theme.CosmoTheme
 import kw.team.designsystem.theme.CosmoTheme.colors
 import kw.team.designsystem.theme.CosmoTheme.typography
+import kw.team.main.ChatModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 internal fun MainAiChatBottomSheet(
-    onDismissRequest: () -> Unit,
-    onTabClick: (selectedAiModel: AiModel) -> Unit,
     bottomSheetState: SheetState,
     pagerState: PagerState,
+    onDismissRequest: () -> Unit,
+    onTabClick: (selectedAiModel: AiModel) -> Unit,
+    onSendMessageClick: () -> Unit,
+    onTextValueChanged: (String) -> Unit,
     tabs: List<AiModel>,
     selectedTab: AiModel,
+    messages: List<ChatModel>,
+    message: String,
     modifier: Modifier = Modifier,
 ) {
     val currentDensity = LocalDensity.current
@@ -71,13 +76,28 @@ internal fun MainAiChatBottomSheet(
             userScrollEnabled = false,
         ) {
             Column(
-                modifier = Modifier.fillMaxSize(),
+                horizontalAlignment = CenterHorizontally,
+                verticalArrangement = Bottom,
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(all = 20.dp),
             ) {
-                LazyColumn {
-                    items(listOf("123123", "123123", "123123", "123123")) {
-                        Text(text = it)
+                MainAiChatLazyColumn(
+                    messages = messages,
+                    modifier = Modifier.weight(weight = 1f),
+                )
+                MainAiChatTextFieldBar(
+                    text = message,
+                    onTextValueChanged = onTextValueChanged,
+                    onIconClick = onSendMessageClick,
+                    placeHolder = {
+                        Text(
+                            text = "${selectedTab}에게 질문하기",
+                            style = typography.body14R,
+                            color = colors.onSurface100,
+                        )
                     }
-                }
+                )
             }
         }
     }
@@ -148,6 +168,10 @@ private fun CosmoAiChatBottomSheetPreview() {
         MainAiChatBottomSheet(
             onDismissRequest = {},
             onTabClick = {},
+            onSendMessageClick = {},
+            onTextValueChanged = {},
+            message = "",
+            messages = listOf(),
             bottomSheetState = rememberStandardBottomSheetState(),
             pagerState = rememberPagerState(pageCount = { 2 }),
             selectedTab = AiModel.entries.first(),
